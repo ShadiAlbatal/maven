@@ -1,0 +1,29 @@
+def projects = [
+        [name: 'demo', gitUrl: '/vagrant/git-repo']
+]
+
+for (project in projects) {
+    mavenJob('Build ' + project['name']) {
+        scm {
+            git {
+                remote {
+                    url(project['gitUrl'])
+                }
+            }
+        }
+
+        goals('-U clean package')
+    }
+
+    mavenJob('Test ' + project['name']) {
+        scm {
+            git {
+                remote {
+                    url(project['gitUrl'])
+                }
+            }
+        }
+
+        goals('-U clean test')
+    }
+}

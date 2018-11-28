@@ -1,0 +1,55 @@
+def gitBaseUrl = 'ssh://git@172.28.128.51/home/git/repos'
+
+def projects = [
+        [name: 'demo', gitUrl: gitBaseUrl + '/demo']
+]
+
+for (project in projects) {
+    mavenJob('Build ' + project['name']) {
+        logRotator {
+            artifactDaysToKeep(3)
+            artifactNumToKeep(30)
+            daysToKeep(30)
+            numToKeep(10)
+        }
+
+        scm {
+            git {
+                remote {
+                    url(project['gitUrl'])
+                    credentials("git")
+                }
+            }
+        }
+
+        triggers {
+            scm('H/3 * * * *')
+        }
+
+        goals('-U clean package')
+    }
+
+    mavenJob('Test ' + project['name']) {
+        logRotator {
+            artifactDaysToKeep(3)
+            artifactNumToKeep(30)
+            daysToKeep(30)
+            numToKeep(10)
+        }
+
+        scm {
+            git {
+                remote {
+                    url(project['gitUrl'])
+                    credentials("git")
+                }
+            }
+        }
+
+        triggers {
+            scm('H/3 * * * *')
+        }
+
+        goals('-U clean test')
+    }
+}

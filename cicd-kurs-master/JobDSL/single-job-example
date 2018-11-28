@@ -1,0 +1,14 @@
+def gitUrl = '/vagrant/git-repo'
+
+mavenJob('Build demo') {
+
+    scm {
+        git {
+            remote {
+                url(gitUrl)
+            }
+        }
+    }
+
+    goals('-U clean package')
+}
